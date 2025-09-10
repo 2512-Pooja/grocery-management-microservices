@@ -3,10 +3,18 @@ package com.grocery.user_service.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.grocery.user_service.entity.User;
+
 import com.grocery.user_service.exception.UserNotFoundException;
+import com.grocery.user_service.mapper.UserMapper;
+import com.grocery.user_service.model.dto.UserDto;
+import com.grocery.user_service.model.dto.request.CreateUserRequest;
+import com.grocery.user_service.model.dto.request.UpdateUserRequest;
+import com.grocery.user_service.model.dto.response.UserListResponse;
+import com.grocery.user_service.model.dto.response.UserResponse;
+import com.grocery.user_service.model.entity.User;
 import com.grocery.user_service.repository.UserRepository;
 
 @Service
@@ -18,42 +26,37 @@ public class UserService {
     }
 
     //------------- create user -------------------//
-    public User createUser(User user) {
-       return userRepository.save(user);
+    public UserResponse createUser(CreateUserRequest request) {
+        User user = UserMapper.toEntity(request);
+        User savedUser = userRepository.save(user);
+        return UserMapper.toResponse(savedUser);
     }
 
     //------------- read user -------------------//
-    public User readUser(String id) {
+    public UserResponse readUser(String id) {
         Optional<User> user = userRepository.findById(id);
         if(user.isEmpty()){
             throw new UserNotFoundException("User with ID " + id + " not found");
         }
-        return user.get();
+        return UserMapper.toResponse(user.get());
     }
 
     //------------- read all users -------------------//
-    public List<User> readUsers(Pageable pageable) {
-        return userRepository.findAll(pageable).getContent();
+    public UserListResponse readUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        return UserMapper.toListResponse(userPage);
     }
 
     //------------- update user -------------------//
-    public User updateUser(String id, User user) {
+    public UserResponse updateUser(String id, UpdateUserRequest request) {
         User existingUser = userRepository.findById(id).orElse(null);
         if (existingUser == null) {
             throw new UserNotFoundException("User with ID " + id + " not found");
-        } else {
-            existingUser.setFirstName(user.getFirstName());
-            existingUser.setLastName(user.getLastName());
-            existingUser.setUserName(user.getUserName());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setPassword(user.getPassword());
-            existingUser.setPhoneNo(user.getPhoneNo());
-            existingUser.setStatus(user.getStatus());
-            existingUser.setOrderIds(user.getOrderIds());
-            existingUser.setRole(user.getRole());
-            userRepository.save(existingUser);
         }
-        return existingUser;
+        
+        UserMapper.updateEntityFromRequest(request, existingUser);
+        User savedUser = userRepository.save(existingUser);
+        return UserMapper.toResponse(savedUser);
     }
 
     //------------- delete user -------------------//
@@ -62,6 +65,22 @@ public class UserService {
             throw new UserNotFoundException("User with ID " + id + " not found"); 
         }
         userRepository.deleteById(id);
+    }
+
+    //------------- Additional methods for DTOs -------------------//
+    public UserDto getUserDto(String id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User with ID " + id + " not found");
+        }
+        return UserMapper.toDto(user.get());
+    }
+
+    public List<UserDto> getAllUserDtos(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        return userPage.getContent().stream()
+            .map(UserMapper::toDto)
+            .toList();
     }
     
 }

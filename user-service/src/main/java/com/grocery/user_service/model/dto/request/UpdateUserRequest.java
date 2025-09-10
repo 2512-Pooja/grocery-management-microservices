@@ -1,42 +1,37 @@
-package com.grocery.user_service.entity;
-
-import java.util.List;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+package com.grocery.user_service.model.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Document(collection = "users")
-public class User {
-    @Id
-    private String userId;
-    @NotNull
+public class UpdateUserRequest {
+    
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
     private String firstName;
-    @NotNull
+    
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
     private String lastName;
-    @NotNull
+    
+    @Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters")
     private String userName;
-    @NotNull
-    @Email
+    
+    @Email(message = "Email should be valid")
     private String email;
-    @NotNull
+    
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
-    @NotNull
-    @Size(max = 15, min = 10, message = "Phone number must not exceed 15 digits")
+    
+    @Size(min = 10, max = 15, message = "Phone number must be between 10 and 15 digits")
     private String phoneNo;
-    @NotNull
+    
     private String status;
-    private List<String> orderIds;
-    @NotNull
     private String role;
 
-    public User() {
-    }
-    public User(String userId, String firstName, String lastName, String userName, String email, String password,
-            String phoneNo, String status, List<String> orderIds, String role) {
-        this.userId = userId;
+    // Default constructor
+    public UpdateUserRequest() {}
+
+    // Constructor
+    public UpdateUserRequest(String firstName, String lastName, String userName, String email, 
+                           String password, String phoneNo, String status, String role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.userName = userName;
@@ -44,76 +39,84 @@ public class User {
         this.password = password;
         this.phoneNo = phoneNo;
         this.status = status;
-        this.orderIds = orderIds;
         this.role = role;
     }
-    public String getUserId() {
-        return userId;
-    }
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+
+    // Getters and Setters
     public String getFirstName() {
         return firstName;
     }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+
     public String getLastName() {
         return lastName;
     }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
     public String getUserName() {
         return userName;
     }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
+
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     public String getPhoneNo() {
         return phoneNo;
     }
+
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
     }
+
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
-    public List<String> getOrderIds() {
-        return orderIds;
-    }
-    public void setOrderIds(List<String> orderIds) {
-        this.orderIds = orderIds;
-    }
+
     public String getRole() {
         return role;
     }
+
     public void setRole(String role) {
         this.role = role;
     }
 
     @Override
     public String toString() {
-        return "User [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName
-                + ", userName=" + userName + ", email=" + email + ", password=" + password + ", phoneNo=" + phoneNo
-                + ", status=" + status + ", orderIds=" + orderIds + ", role=" + role + "]";
+        return "UpdateUserRequest{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNo='" + phoneNo + '\'' +
+                ", status='" + status + '\'' +
+                ", role='" + role + '\'' +
+                '}';
     }
-
-
 }
